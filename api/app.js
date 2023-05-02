@@ -2,6 +2,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const { sequelize } = require("./models/index");
+const cors = require("cors");
 
 // import routes
 const users = require("./routes/users");
@@ -16,6 +17,9 @@ const app = express();
 
 // setup morgan which gives us http request logging
 app.use(morgan("dev"));
+
+// middleware for supporting cross-origin resource sharing
+app.use(cors());
 
 // parses incoming JSON requests and puts the parsed data in req.body
 app.use(express.json());
