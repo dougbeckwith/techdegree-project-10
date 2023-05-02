@@ -17,6 +17,7 @@ function App() {
       {courses ? (
         <div>
           <h1>Available Courses</h1>
+          <a href="">Test</a>
           <ul>
             {courses.map((course, index) => (
               <li key={index}>{course.title}</li>
