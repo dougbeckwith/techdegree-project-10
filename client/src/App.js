@@ -14,7 +14,7 @@ import UserSignUp from "./components/UserSignUp";
 
 function App() {
   return (
-    <div>
+    <>
       <Header />
       <Routes>
         <Route path="/" element={<Courses />} />
@@ -28,7 +28,7 @@ function App() {
         <Route path="forbidden" element={<Forbidden />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </div>
+    </>
   );
 }
 
