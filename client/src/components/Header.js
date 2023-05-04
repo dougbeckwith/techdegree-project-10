@@ -1,6 +1,11 @@
 import React from "react";
+import { useContext } from "react";
+import UserContext from "../context/UserContext";
+import { Link } from "react-router-dom";
 
 const Header = () => {
+  const { authUser } = useContext(UserContext);
+
   return (
     <header>
       <div className="wrap header--flex">
@@ -8,12 +13,25 @@ const Header = () => {
           <a href="index.html">Courses</a>
         </h1>
         <nav>
-          <ul className="header--signedin">
-            <li>Welcome, Joe Smith!</li>
-            <li>
-              <a href="sign-out.html">Sign Out</a>
-            </li>
-          </ul>
+          {authUser ? (
+            <ul className="header--signedin">
+              <li>
+                Welcome, {authUser.firstName} {authUser.lastName}!
+              </li>
+              <li>
+                <Link to={"signout"}>Sign Out</Link>
+              </li>
+            </ul>
+          ) : (
+            <ul className="header--signedout">
+              <li>
+                <Link to={"signup"}>Sign Up</Link>
+              </li>
+              <li>
+                <Link to={"signin"}>Sign In</Link>
+              </li>
+            </ul>
+          )}
         </nav>
       </div>
     </header>
