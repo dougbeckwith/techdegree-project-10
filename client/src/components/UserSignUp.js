@@ -1,22 +1,61 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import UserContext from "../context/UserContext";
 
 const UserSignUp = () => {
   const navigate = useNavigate();
+  const { actions } = useContext(UserContext);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
-  const handleSubmit = (e) => {
-    //  location.href='index.html';"
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(e);
+
     console.log(firstName, lastName, emailAddress, password);
-    // send credientals to backend
-    // if user created login user
-    // if error messages show errors ?
+
+    const user = {
+      firstName,
+      lastName,
+      emailAddress,
+      password
+    };
+
+    const credentials = {
+      emailAddress,
+      password
+    };
+
+    const fetchOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify(user)
+    };
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/users",
+        fetchOptions
+      );
+      if (response.status === 201) {
+        console.log(
+          `${user.firstName} is successfully signed up and authenticated`
+        );
+        await actions.signIn(credentials);
+        navigate("/");
+      } else if (response.status === 400) {
+        console.log(response);
+      } else {
+        console.log(response);
+        throw new Error();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCancel = () => {
