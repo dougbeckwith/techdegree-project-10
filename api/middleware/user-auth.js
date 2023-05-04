@@ -18,15 +18,15 @@ exports.authenticateUser = async (req, res, next) => {
     if (user) {
       const authenticated = bcrypt.compareSync(credentials.pass, user.password);
       if (authenticated) {
-        console.log(`Authentication successful for ${user.emailAddress}`);
+        console.log(`Authentication successful for ${user.name}`);
 
         // Store the user on the Request object.
         req.currentUser = user;
       } else {
-        message = `Authentication failure for ${user.emailAddress}`;
+        message = `Authentication failure for ${user.name}`;
       }
     } else {
-      message = `User not found for ${user.emailAddress}`;
+      message = `User not found for ${user.name}`;
     }
   } else {
     message = "Auth header not found";
