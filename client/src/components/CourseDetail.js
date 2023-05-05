@@ -19,8 +19,6 @@ const CourseDetail = () => {
         console.log(error);
         return;
       }
-      console.log(course);
-      console.log(response);
       if (response?.status === 200) {
         setCourse(course);
       } else if (response?.status) {
@@ -43,7 +41,7 @@ const CourseDetail = () => {
           <a className="button" href="#">
             Delete Course
           </a>
-          <Link className="button button-secondary" to={"/courses"}>
+          <Link className="button button-secondary" to={"/"}>
             Return to List
           </Link>
         </div>
