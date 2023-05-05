@@ -6,10 +6,15 @@ const bcrypt = require("bcrypt");
 // Middleware to authenticate the request using Basic Auth.
 // Sets current user to the request body
 exports.authenticateUser = async (req, res, next) => {
+
   let message; // store the message to display
 
   // Parse the user's credentials from the Authorization header.
   const credentials = auth(req);
+
+  // BUG Credientials Undefined on post request to create course
+  // Working for SIGN IN AND SIGN UP requests
+  console.log(credentials); 
 
   if (credentials) {
     const user = await User.findOne({
@@ -19,7 +24,7 @@ exports.authenticateUser = async (req, res, next) => {
       const authenticated = bcrypt.compareSync(credentials.pass, user.password);
       if (authenticated) {
         console.log(`Authentication successful for ${user.name}`);
-
+        console.log(user);
         // Store the user on the Request object.
         req.currentUser = user;
       } else {

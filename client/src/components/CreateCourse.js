@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import UserContext from "../context/UserContext";
 
 const CreateCourse = () => {
   const navigate = useNavigate();
+  const { authUser } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -12,25 +14,39 @@ const CreateCourse = () => {
 
   const [validationErrors, setValidationErrors] = useState(false);
 
-  const createCourse = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     let response;
 
+    const url = "http://localhost:5000/api/courses";
+    const course = {
+      title,
+      description,
+      time,
+      materials
+    };
+
+    const encodedCredentials = `${authUser.emailAddress}:${authUser.password}`;
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${encodedCredentials}`
+      },
+      body: JSON.stringify(course)
+    };
     try {
       // make post request to api/courses
       // need to send basic auth
       // need to send body with all the course data
-      response = await fetch("http://localhost:5000/api/courses");
+      response = await fetch(url, requestOptions);
     } catch (error) {
       setValidationErrors(true);
       console.log(error);
     }
     // handle response
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log(title, description, time, materials);
-    createCourse();
   };
 
   const handleCancel = () => {
