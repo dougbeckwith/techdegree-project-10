@@ -18,8 +18,6 @@ const Courses = () => {
         console.log(error);
         return;
       }
-      console.log(courses);
-      console.log(response);
       if (response?.status === 200) {
         setCourses(courses);
       } else if (response?.status) {
