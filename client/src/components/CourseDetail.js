@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import UserContext from "../context/UserContext";
 
 const CourseDetail = () => {
   const [course, setCourse] = useState(null);
   const { courseId } = useParams();
+  const { authUser } = useContext(UserContext);
 
   // get course data
   useEffect(() => {
@@ -26,21 +29,34 @@ const CourseDetail = () => {
       }
     };
     getcourse();
-  }, []);
+    console.log(authUser);
+  }, [authUser, courseId]);
+
+  const handleDelete = (e) => {
+    console.log("delete courseId:", courseId);
+    //TO DO
+    //Make delete request to api
+    //If success navigate to /
+    //else show error message to user
+  };
 
   return (
     <main>
       <div className="actions--bar">
         <div className="wrap">
-          <Link className="button" to={`/courses/${courseId}/update`}>
-            Update Course
-          </Link>
-          {/* <Link className="button" to={"courses/1/update"}>
-            Delete Course
-          </Link> */}
-          <a className="button" href="#">
-            Delete Course
-          </a>
+          {authUser && (
+            <>
+              <Link className="button" to={`/courses/${courseId}/update`}>
+                Update Course
+              </Link>
+              <Link
+                className="button"
+                onClick={(e) => handleDelete(e)}
+                to={"/"}>
+                Delete Course
+              </Link>
+            </>
+          )}
           <Link className="button button-secondary" to={"/"}>
             Return to List
           </Link>
@@ -59,10 +75,10 @@ const CourseDetail = () => {
               </div>
               <div>
                 <h3 className="course--detail--title">Estimated Time</h3>
-                <p>{course.estimatedTime}</p>
+                <ReactMarkdown>{course.estimatedTime}</ReactMarkdown>
                 <h3 className="course--detail--title">Materials Needed</h3>
                 <ul className="course--detail--list">
-                  <li>{course.materialsNeeded}</li>
+                  <ReactMarkdown>{course.materialsNeeded}</ReactMarkdown>
                 </ul>
               </div>
             </div>
