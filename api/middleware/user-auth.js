@@ -6,7 +6,6 @@ const bcrypt = require("bcrypt");
 // Middleware to authenticate the request using Basic Auth.
 // Sets current user to the request body
 exports.authenticateUser = async (req, res, next) => {
-
   let message; // store the message to display
 
   // Parse the user's credentials from the Authorization header.
@@ -14,8 +13,14 @@ exports.authenticateUser = async (req, res, next) => {
 
   // BUG Credientials Undefined on post request to create course
   // Working for SIGN IN AND SIGN UP requests
-  console.log(credentials); 
+  let errors = [];
 
+  if (!credentials.name) {
+    errors.push("Please Enter Email Address");
+  }
+  if (!credentials.pass) {
+    errors.push("Please Enter A Password");
+  }
   if (credentials) {
     const user = await User.findOne({
       where: { emailAddress: credentials.name }
@@ -23,22 +28,21 @@ exports.authenticateUser = async (req, res, next) => {
     if (user) {
       const authenticated = bcrypt.compareSync(credentials.pass, user.password);
       if (authenticated) {
-        console.log(`Authentication successful for ${user.name}`);
-        console.log(user);
-        // Store the user on the Request object.
+        console.log(`Authentication successful for ${credentials.name}`);
         req.currentUser = user;
       } else {
-        message = `Authentication failure for ${user.name}`;
+        message = `Authentication failure for ${credentials.name}`;
       }
     } else {
-      message = `User not found for ${user.name}`;
+      message = `User not found for ${credentials.name}`;
     }
   } else {
     message = "Auth header not found";
   }
-  if (message) {
-    console.warn(message);
-    res.status(401).json({ message: "Access Denied" });
+  if (errors.length) {
+    res.status(400).json({ errors });
+  } else if (message) {
+    res.status(401).json({ errors: ["Access Denied"] });
   } else {
     next();
   }
