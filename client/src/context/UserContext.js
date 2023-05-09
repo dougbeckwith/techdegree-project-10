@@ -17,22 +17,31 @@ export const UserProvider = (props) => {
         Authorization: `Basic ${encodedCredentials}`
       }
     };
-    console.log(fetchOptions);
-
-    const response = await fetch(
-      "http://localhost:5000/api/users",
-      fetchOptions
-    );
-    if (response.status === 200) {
-      const { user } = await response.json();
-      console.log(user);
-      console.log(`SUCCESS ${user.firstName} is now signed in!`);
-      setAuthUser(user);
-      return user;
-    } else if (response.status === 401) {
-      return null;
-    } else {
-      throw new Error();
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/users",
+        fetchOptions
+      );
+      console.log(response);
+      if (response.status === 200) {
+        const { user } = await response.json();
+        console.log(user);
+        console.log(`SUCCESS ${user.firstName} is now signed in!`);
+        setAuthUser(user);
+        return { user };
+      } else if (response.status === 401) {
+        const { errors } = await response.json();
+        console.log(errors);
+        return { errors };
+      } else if (response.status === 400) {
+        const { errors } = await response.json();
+        console.log(errors);
+        return { errors };
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 

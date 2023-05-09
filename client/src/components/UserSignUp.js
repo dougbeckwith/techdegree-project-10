@@ -11,6 +11,7 @@ const UserSignUp = () => {
   const [lastName, setLastName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,11 +48,10 @@ const UserSignUp = () => {
         );
         await actions.signIn(credentials);
         navigate("/");
-      } else if (response.status === 400) {
-        console.log(response);
-      } else {
-        console.log(response);
-        throw new Error();
+      }
+      if (response.status === 400) {
+        const { errors } = await response.json();
+        setErrors(errors);
       }
     } catch (error) {
       console.log(error);
@@ -108,6 +108,18 @@ const UserSignUp = () => {
             onClick={handleCancel}>
             Cancel
           </button>
+          {errors.length ? (
+            <div className="validation--errors">
+              <h3>Validation Errors</h3>
+              <ul>
+                {errors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <></>
+          )}
         </form>
         <p>
           Already have a user account? Click here to{" "}
