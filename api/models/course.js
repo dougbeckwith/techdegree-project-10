@@ -15,9 +15,11 @@ module.exports = (sequelize) => {
         allowNull: false,
         validate: {
           notNull: {
+            notNull: true,
             msg: "A title is required"
           },
           notEmpty: {
+            notEmpty: true,
             msg: "Please provide a title"
           }
         }
@@ -27,9 +29,11 @@ module.exports = (sequelize) => {
         allowNull: false,
         validate: {
           notNull: {
+            notNull: true,
             msg: "A description is required"
           },
           notEmpty: {
+            notEmpty: true,
             msg: "Please provide a description"
           }
         }
