@@ -57,11 +57,13 @@ router.get("/:id", async (req, res, next) => {
 // create course
 router.post("/", authenticateUser, async (req, res, next) => {
   try {
-    const course = await Course.create(req.body);
+    const course = await Course.create({
+      ...req.body,
+      userId: req.currentUser.id
+    });
     res.status(201).location(`/courses/${course.id}`).end();
   } catch (error) {
-    console.log("ERROR: ", error.name);
-
+    console.log(error);
     if (
       error.name === "SequelizeValidationError" ||
       error.name === "SequelizeUniqueConstraintError"
@@ -87,18 +89,19 @@ router.put("/:id", authenticateUser, async (req, res, next) => {
     });
 
     if (!course) {
-      res.status(400).json({ message: "No Course Found" });
+      res.status(400).json({ errors: ["No Course Found"] });
     }
     if (course.userId === req.currentUser.id) {
       course.set({
         title: req.body.title,
         description: req.body.description,
-        userId: req.body.userId
+        estimatedTime: req.body.estimatedTime,
+        materialsNeeded: req.body.materialsNeeded
       });
       await course.save();
       res.status(204).end();
     } else {
-      res.status(400).json({ message: "Not Authorized To Update Course" });
+      res.status(400).json({ errors: ["Not Authorized To Update Course"] });
     }
   } catch (error) {
     console.log("ERROR: ", error.name);
@@ -127,14 +130,14 @@ router.delete("/:id", authenticateUser, async (req, res, next) => {
       ]
     });
     if (!course) {
-      res.status(400).json({ message: "No Course Found" });
+      res.status(400).json({ errors: ["No Course Found"] });
     }
     // check allowed to destory
     if (course.userId === req.currentUser.id) {
       await course.destroy();
       res.status(204).end();
     } else {
-      res.status(400).json({ message: "Not Authorized To Delete Course" });
+      res.status(400).json({ errors: ["Not Authorized To Delete Course"] });
     }
   } catch (error) {
     console.log(error);
