@@ -69,7 +69,6 @@ const CourseDetail = () => {
       response = await fetch(url, requestOptions);
 
       if (response.status === 204) {
-        alert("course deleted!");
         navigate("/");
       }
 

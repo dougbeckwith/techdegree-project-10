@@ -82,7 +82,6 @@ const UpdateCourse = () => {
     try {
       response = await fetch(url, requestOptions);
       if (response.status === 204) {
-        alert("course updated!");
         navigate(`/courses/${id}`);
       }
 

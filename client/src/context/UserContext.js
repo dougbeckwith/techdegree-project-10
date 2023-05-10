@@ -39,11 +39,9 @@ export const UserProvider = (props) => {
         return { user };
       } else if (response.status === 401) {
         const { errors } = await response.json();
-        console.log(errors);
         return { errors };
       } else if (response.status === 400) {
         const { errors } = await response.json();
-        console.log(errors);
         return { errors };
       } else {
         throw new Error();

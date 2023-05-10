@@ -49,7 +49,6 @@ const CreateCourse = () => {
       response = await fetch(url, requestOptions);
 
       if (response.status === 201) {
-        alert("course created!");
         navigate("/");
       }
 
