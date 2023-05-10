@@ -8,7 +8,12 @@ export const UserProvider = (props) => {
   const cookie = Cookies.get("authenticatedUser");
   const [authUser, setAuthUser] = useState(cookie ? JSON.parse(cookie) : null);
 
-  // sign in method
+  /* sign in method
+     returns user if sign in success
+     and sets user cookies
+     else returns error object 
+  */
+
   const signIn = async (credentials) => {
     const encodedCredentials = btoa(
       `${credentials.emailAddress}:${credentials.password}`
@@ -48,6 +53,7 @@ export const UserProvider = (props) => {
     }
   };
 
+  // sign out method sets user to null and removes user cookies
   const signOut = () => {
     setAuthUser(null);
     Cookies.remove("authenticatedUser");
