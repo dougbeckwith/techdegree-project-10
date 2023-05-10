@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserContext from "../context/UserContext";
@@ -20,16 +20,11 @@ const UserSignIn = () => {
 
     try {
       const { user, errors } = await actions.signIn(credentials);
-      console.log(`user:`, user, errors);
       if (user) {
         setErrors([]);
-        console.log(
-          `Success Signed In ${user.firstName}, ${user.emailAddress}`
-        );
         navigate("/");
       }
       if (errors) {
-        console.log(errors);
         setErrors(errors);
       }
     } catch (error) {
@@ -40,6 +35,18 @@ const UserSignIn = () => {
     <main>
       <div className="form--centered">
         <h2>Sign In</h2>
+        {errors.length ? (
+          <div className="validation--errors">
+            <h3>Validation Errors</h3>
+            <ul>
+              {errors.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <></>
+        )}
         <form>
           <label htmlFor="emailAddress">Email Address</label>
           <input
@@ -66,18 +73,6 @@ const UserSignIn = () => {
           <button className="button button-secondary" type="button">
             Cancel
           </button>
-          {errors.length ? (
-            <div className="validation--errors">
-              <h3>Validation Errors</h3>
-              <ul>
-                {errors.map((error, index) => (
-                  <li key={index}>{error}</li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <></>
-          )}
         </form>
         <p>
           Don't have a user account? Click here to{" "}

@@ -16,8 +16,6 @@ const UserSignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(firstName, lastName, emailAddress, password);
-
     const user = {
       firstName,
       lastName,
@@ -66,6 +64,18 @@ const UserSignUp = () => {
     <main>
       <div className="form--centered">
         <h2>Sign Up</h2>
+        {errors.length ? (
+          <div className="validation--errors">
+            <h3>Validation Errors</h3>
+            <ul>
+              {errors.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <></>
+        )}
         <form onSubmit={(e) => handleSubmit(e)}>
           <label htmlFor="firstName">First Name</label>
           <input
@@ -108,18 +118,6 @@ const UserSignUp = () => {
             onClick={handleCancel}>
             Cancel
           </button>
-          {errors.length ? (
-            <div className="validation--errors">
-              <h3>Validation Errors</h3>
-              <ul>
-                {errors.map((error, index) => (
-                  <li key={index}>{error}</li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <></>
-          )}
         </form>
         <p>
           Already have a user account? Click here to{" "}

@@ -22,11 +22,10 @@ export const UserProvider = (props) => {
         "http://localhost:5000/api/users",
         fetchOptions
       );
-      console.log(response);
       if (response.status === 200) {
         const { user } = await response.json();
+        console.log(`SUCCESS ${user.emailAddress} is now signed in!`);
         console.log(user);
-        console.log(`SUCCESS ${user.firstName} is now signed in!`);
         setAuthUser(user);
         return { user };
       } else if (response.status === 401) {
