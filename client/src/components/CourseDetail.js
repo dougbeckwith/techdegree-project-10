@@ -9,7 +9,7 @@ const CourseDetail = () => {
   const [errors, setErrors] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
 
-  const { courseId } = useParams();
+  const { id } = useParams();
   const { authUser } = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -20,16 +20,18 @@ const CourseDetail = () => {
       let response;
       let course;
       try {
-        response = await fetch(`http://localhost:5000/api/courses/${courseId}`);
-        const data = await response.json();
-        course = data.course;
+        response = await fetch(`http://localhost:5000/api/courses/${id}`);
       } catch (error) {
         console.log(error);
       }
       if (response.status === 200) {
+        const data = await response.json();
+        course = data.course;
         setCourse(course);
-      } else if (response?.status) {
-        console.log(`HTTP Response Code: ${response.status}`);
+      } else if (response.status === 400) {
+        navigate("/notfound");
+      } else if (response.status === 500) {
+        navigate("/error");
       }
       if (!authUser) {
         setIsOwner(false);
@@ -38,8 +40,9 @@ const CourseDetail = () => {
       }
     };
     getcourse();
-  }, [authUser, courseId]);
+  }, [navigate, authUser, id]);
 
+  // handles delete course
   const handleDelete = async (e) => {
     e.preventDefault();
 
@@ -49,7 +52,7 @@ const CourseDetail = () => {
       console.log("user not signed in");
       return;
     }
-    const url = `http://localhost:5000/api/courses/${courseId}`;
+    const url = `http://localhost:5000/api/courses/${id}`;
 
     const encodedCredentials = btoa(
       `${authUser.emailAddress}:${authUser.password}`
@@ -87,7 +90,7 @@ const CourseDetail = () => {
         <div className="wrap">
           {isOwner && (
             <>
-              <Link className="button" to={`/courses/${courseId}/update`}>
+              <Link className="button" to={`/courses/${id}/update`}>
                 Update Course
               </Link>
               <Link
@@ -112,11 +115,11 @@ const CourseDetail = () => {
                 <h3 className="course--detail--title">Course</h3>
                 <h4 className="course--name">{course.title}</h4>
                 <p>By Joe Smith</p>
-                <p>{course.description}</p>
+                <ReactMarkdown>{course.description}</ReactMarkdown>
               </div>
               <div>
                 <h3 className="course--detail--title">Estimated Time</h3>
-                <ReactMarkdown>{course.estimatedTime}</ReactMarkdown>
+                <p>{course.estimatedTime}</p>
                 <h3 className="course--detail--title">Materials Needed</h3>
                 <ul className="course--detail--list">
                   <ReactMarkdown>{course.materialsNeeded}</ReactMarkdown>
