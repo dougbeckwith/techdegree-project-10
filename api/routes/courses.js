@@ -19,17 +19,8 @@ router.get("/", async (req, res, next) => {
     });
     res.status(200).json({ courses });
   } catch (error) {
-    console.log("ERROR: ", error.name);
-
-    if (
-      error.name === "SequelizeValidationError" ||
-      error.name === "SequelizeUniqueConstraintError"
-    ) {
-      const errors = error.errors.map((err) => err.message);
-      res.status(400).json({ errors });
-    } else {
-      throw error;
-    }
+    console.log(error);
+    res.status(500).end();
   }
 });
 
@@ -51,6 +42,7 @@ router.get("/:id", async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    res.status(500).end();
   }
 });
 
@@ -71,7 +63,7 @@ router.post("/", authenticateUser, async (req, res, next) => {
       const errors = error.errors.map((err) => err.message);
       res.status(400).json({ errors });
     } else {
-      throw error;
+      res.status(500).end();
     }
   }
 });
@@ -101,7 +93,7 @@ router.put("/:id", authenticateUser, async (req, res, next) => {
       await course.save();
       res.status(204).end();
     } else {
-      res.status(400).json({ errors: ["Not Authorized To Update Course"] });
+      res.status(401).json({ errors: ["Not Authorized To Update Course"] });
     }
   } catch (error) {
     console.log("ERROR: ", error.name);
@@ -113,7 +105,7 @@ router.put("/:id", authenticateUser, async (req, res, next) => {
       const errors = error.errors.map((err) => err.message);
       res.status(400).json({ errors });
     } else {
-      throw error;
+      res.status(500).end();
     }
   }
 });
@@ -141,6 +133,7 @@ router.delete("/:id", authenticateUser, async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    res.status(500).end();
   }
 });
 
