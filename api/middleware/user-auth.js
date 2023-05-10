@@ -10,9 +10,6 @@ exports.authenticateUser = async (req, res, next) => {
 
   // Parse the user's credentials from the Authorization header.
   const credentials = auth(req);
-
-  // BUG Credientials Undefined on post request to create course
-  // Working for SIGN IN AND SIGN UP requests
   let errors = [];
 
   if (!credentials.name) {
@@ -28,6 +25,7 @@ exports.authenticateUser = async (req, res, next) => {
     if (user) {
       const authenticated = bcrypt.compareSync(credentials.pass, user.password);
       if (authenticated) {
+        user.password = credentials.pass;
         console.log(`Authentication successful for ${credentials.name}`);
         req.currentUser = user;
       } else {
@@ -40,7 +38,7 @@ exports.authenticateUser = async (req, res, next) => {
     message = "Auth header not found";
   }
   if (errors.length) {
-    res.status(400).json({ errors });
+    res.status(400).json({ errors: errors });
   } else if (message) {
     res.status(401).json({ errors: ["Access Denied"] });
   } else {
