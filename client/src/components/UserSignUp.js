@@ -4,15 +4,16 @@ import { Link, useNavigate } from "react-router-dom";
 import UserContext from "../context/UserContext";
 
 const UserSignUp = () => {
-  const navigate = useNavigate();
-  const { actions } = useContext(UserContext);
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState([]);
 
+  const navigate = useNavigate();
+  const { actions } = useContext(UserContext);
+
+  // handle sign up
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -41,9 +42,6 @@ const UserSignUp = () => {
         fetchOptions
       );
       if (response.status === 201) {
-        console.log(
-          `${user.firstName} is successfully signed up and authenticated`
-        );
         await actions.signIn(credentials);
         navigate("/");
       }
@@ -56,6 +54,7 @@ const UserSignUp = () => {
     }
   };
 
+  // handle sign up cancel
   const handleCancel = () => {
     navigate("/");
   };

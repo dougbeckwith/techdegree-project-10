@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import UserContext from "../context/UserContext";
 
 const UserSignIn = () => {
@@ -9,10 +9,18 @@ const UserSignIn = () => {
   const [errors, setErrors] = useState([]);
 
   const { actions } = useContext(UserContext);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // handle sign in
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let from = "/";
+
+    if (location.state) {
+      from = location.state.from;
+    }
     const credentials = {
       emailAddress,
       password
@@ -22,7 +30,7 @@ const UserSignIn = () => {
       const { user, errors } = await actions.signIn(credentials);
       if (user) {
         setErrors([]);
-        navigate("/");
+        navigate(from);
       }
       if (errors) {
         setErrors(errors);
@@ -30,6 +38,11 @@ const UserSignIn = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  // handle sign in cancel
+  const handleCancel = () => {
+    navigate("/");
   };
   return (
     <main>
@@ -70,7 +83,10 @@ const UserSignIn = () => {
             onClick={(e) => handleSubmit(e)}>
             Sign In
           </button>
-          <button className="button button-secondary" type="button">
+          <button
+            className="button button-secondary"
+            type="button"
+            onClick={handleCancel}>
             Cancel
           </button>
         </form>

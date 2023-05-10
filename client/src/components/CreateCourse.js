@@ -4,16 +4,17 @@ import { useNavigate } from "react-router-dom";
 import UserContext from "../context/UserContext";
 
 const CreateCourse = () => {
-  const navigate = useNavigate();
-  const { authUser } = useContext(UserContext);
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [estimatedTime, setEstimatedTime] = useState("");
   const [materialsNeeded, setMaterialsNeeded] = useState("");
-
   const [errors, setErrors] = useState([]);
 
+  const { authUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  // handle create course
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -63,6 +64,7 @@ const CreateCourse = () => {
     }
   };
 
+  // handle cancel create course
   const handleCancel = () => {
     navigate("/");
   };

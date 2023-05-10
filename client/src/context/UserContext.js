@@ -6,6 +6,7 @@ const UserContext = createContext(null);
 export const UserProvider = (props) => {
   const [authUser, setAuthUser] = useState(null);
 
+  // sign in method
   const signIn = async (credentials) => {
     const encodedCredentials = btoa(
       `${credentials.emailAddress}:${credentials.password}`
@@ -24,8 +25,6 @@ export const UserProvider = (props) => {
       );
       if (response.status === 200) {
         const { user } = await response.json();
-        console.log(`SUCCESS ${user.emailAddress} is now signed in!`);
-        console.log(user);
         setAuthUser(user);
         return { user };
       } else if (response.status === 401) {

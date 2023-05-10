@@ -1,31 +1,29 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Courses = () => {
   const [courses, setCourses] = useState(null);
+  const navigate = useNavigate;
 
-  // Get all courses on component load
+  // get all courses
   useEffect(() => {
     const getCourses = async () => {
       let response;
-      let courses;
       try {
         response = await fetch("http://localhost:5000/api/courses");
-        const data = await response.json();
-        courses = data.courses;
       } catch (error) {
         console.log(error);
-        return;
       }
       if (response.status === 200) {
+        const { courses } = await response.json();
         setCourses(courses);
-      } else if (response.status) {
-        console.log(`HTTP Response Code: ${response.status}`);
+      } else if (response.status === 500) {
+        navigate("/error");
       }
     };
     getCourses();
-  }, []);
+  }, [navigate]);
   return (
     <main>
       <div className="wrap main--grid">

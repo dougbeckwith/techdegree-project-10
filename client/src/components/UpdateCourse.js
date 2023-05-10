@@ -5,45 +5,49 @@ import { useContext } from "react";
 import UserContext from "../context/UserContext";
 
 const UpdateCourse = () => {
-  const navigate = useNavigate();
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [estimatedTime, setEstimatedTime] = useState("");
   const [materialsNeeded, setMaterialsNeeded] = useState("");
   const [errors, setErrors] = useState([]);
-
   const [course, setCourse] = useState(null);
-  const { courseId } = useParams();
 
   const { authUser } = useContext(UserContext);
-  // get course data
+
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  // get course by id
   useEffect(() => {
     const getcourse = async () => {
       let response;
-      let course;
+
       try {
-        response = await fetch(`http://localhost:5000/api/courses/${courseId}`);
-        const data = await response.json();
-        course = data.course;
+        response = await fetch(`http://localhost:5000/api/courses/${id}`);
       } catch (error) {
         console.log(error);
-        return;
       }
-      if (response?.status === 200) {
+
+      if (response.status === 200) {
+        const { course } = await response.json();
         setCourse(course);
         setTitle(course.title);
         setDescription(course.description);
         setEstimatedTime(course.estimatedTime);
         setMaterialsNeeded(course.materialsNeeded);
-      } else if (response?.status) {
-        console.log(`HTTP Response Code: ${response?.status}`);
+      } else if (response.status === 400) {
+        navigate("notfound");
+      } else if (response.status === 401) {
+        navigate("/forbidden");
+      } else if (response.status === 500) {
+        navigate("/error");
       }
     };
 
     getcourse();
-  }, [courseId]);
+  }, [id, navigate]);
 
+  // handle update course
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -53,7 +57,7 @@ const UpdateCourse = () => {
       console.log("user not signed in");
       return;
     }
-    const url = `http://localhost:5000/api/courses/${courseId}`;
+    const url = `http://localhost:5000/api/courses/${id}`;
 
     const course = {
       title,
@@ -79,7 +83,7 @@ const UpdateCourse = () => {
       response = await fetch(url, requestOptions);
       if (response.status === 204) {
         alert("course updated!");
-        navigate("/");
+        navigate(`/courses/${id}`);
       }
 
       if (response.status === 400 || response.status === 401) {
@@ -95,6 +99,7 @@ const UpdateCourse = () => {
     }
   };
 
+  // handle update course cancel
   const handleCancel = () => {
     navigate("/");
   };
