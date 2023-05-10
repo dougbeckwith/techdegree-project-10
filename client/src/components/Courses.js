@@ -18,10 +18,10 @@ const Courses = () => {
         console.log(error);
         return;
       }
-      if (response?.status === 200) {
+      if (response.status === 200) {
         setCourses(courses);
-      } else if (response?.status) {
-        console.log(`HTTP Response Code: ${response?.status}`);
+      } else if (response.status) {
+        console.log(`HTTP Response Code: ${response.status}`);
       }
     };
     getCourses();

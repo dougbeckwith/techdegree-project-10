@@ -9,25 +9,31 @@ const CreateCourse = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [time, setTime] = useState("");
-  const [materials, setMaterials] = useState("");
+  const [estimatedTime, setEstimatedTime] = useState("");
+  const [materialsNeeded, setMaterialsNeeded] = useState("");
 
-  const [validationErrors, setValidationErrors] = useState(false);
+  const [errors, setErrors] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     let response;
-
+    if (!authUser) {
+      console.log("user not signed in");
+      return;
+    }
     const url = "http://localhost:5000/api/courses";
+
     const course = {
       title,
       description,
-      time,
-      materials
+      estimatedTime,
+      materialsNeeded
     };
 
-    const encodedCredentials = `${authUser.emailAddress}:${authUser.password}`;
+    const encodedCredentials = btoa(
+      `${authUser.emailAddress}:${authUser.password}`
+    );
 
     const requestOptions = {
       method: "POST",
@@ -37,16 +43,24 @@ const CreateCourse = () => {
       },
       body: JSON.stringify(course)
     };
+
     try {
-      // make post request to api/courses
-      // need to send basic auth
-      // need to send body with all the course data
       response = await fetch(url, requestOptions);
+
+      if (response.status === 201) {
+        alert("course created!");
+        navigate("/");
+      }
+
+      if (response.status === 400 || response.status === 401) {
+        const { errors } = await response.json();
+        setErrors(errors);
+      } else {
+        setErrors(["Error Could Not Create Course"]);
+      }
     } catch (error) {
-      setValidationErrors(true);
       console.log(error);
     }
-    // handle response
   };
 
   const handleCancel = () => {
@@ -57,14 +71,17 @@ const CreateCourse = () => {
     <main>
       <div className="wrap">
         <h2>Create Course</h2>
-        {validationErrors && (
+        {errors.length ? (
           <div className="validation--errors">
             <h3>Validation Errors</h3>
             <ul>
-              <li>Please provide a value for "Title"</li>
-              <li>Please provide a value for "Description"</li>
+              {errors.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
             </ul>
           </div>
+        ) : (
+          <></>
         )}
         <form>
           <div className="main--flex">
@@ -91,15 +108,15 @@ const CreateCourse = () => {
                 id="estimatedTime"
                 name="estimatedTime"
                 type="text"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
+                value={estimatedTime}
+                onChange={(e) => setEstimatedTime(e.target.value)}
               />
               <label htmlFor="materialsNeeded">Materials Needed</label>
               <textarea
                 id="materialsNeeded"
                 name="materialsNeeded"
-                value={materials}
-                onChange={(e) => setMaterials(e.target.value)}></textarea>
+                value={materialsNeeded}
+                onChange={(e) => setMaterialsNeeded(e.target.value)}></textarea>
             </div>
           </div>
           <button

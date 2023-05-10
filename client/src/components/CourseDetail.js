@@ -1,13 +1,18 @@
 import React, { useContext } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import UserContext from "../context/UserContext";
 
 const CourseDetail = () => {
   const [course, setCourse] = useState(null);
+  const [errors, setErrors] = useState([]);
+  const [isOwner, setIsOwner] = useState(false);
+
   const { courseId } = useParams();
   const { authUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
 
   // get course data
   useEffect(() => {
@@ -20,31 +25,67 @@ const CourseDetail = () => {
         course = data.course;
       } catch (error) {
         console.log(error);
-        return;
       }
-      if (response?.status === 200) {
+      if (response.status === 200) {
         setCourse(course);
       } else if (response?.status) {
-        console.log(`HTTP Response Code: ${response?.status}`);
+        console.log(`HTTP Response Code: ${response.status}`);
+      }
+      if (!authUser) {
+        setIsOwner(false);
+      } else if (course.userId === authUser.id) {
+        setIsOwner(true);
       }
     };
     getcourse();
-    console.log(authUser);
   }, [authUser, courseId]);
 
-  const handleDelete = (e) => {
-    console.log("delete courseId:", courseId);
-    //TO DO
-    //Make delete request to api
-    //If success navigate to /
-    //else show error message to user
+  const handleDelete = async (e) => {
+    e.preventDefault();
+
+    let response;
+
+    if (!authUser) {
+      console.log("user not signed in");
+      return;
+    }
+    const url = `http://localhost:5000/api/courses/${courseId}`;
+
+    const encodedCredentials = btoa(
+      `${authUser.emailAddress}:${authUser.password}`
+    );
+
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        Authorization: `Basic ${encodedCredentials}`
+      }
+    };
+
+    try {
+      response = await fetch(url, requestOptions);
+
+      if (response.status === 204) {
+        alert("course deleted!");
+        navigate("/");
+      }
+
+      if (response.status === 400 || response.status === 401) {
+        const { errors } = await response.json();
+        setErrors(errors);
+      } else {
+        setErrors(["Could Not Delete Course"]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <main>
       <div className="actions--bar">
         <div className="wrap">
-          {authUser && (
+          {isOwner && (
             <>
               <Link className="button" to={`/courses/${courseId}/update`}>
                 Update Course
@@ -83,6 +124,18 @@ const CourseDetail = () => {
               </div>
             </div>
           </form>
+          {errors.length ? (
+            <div className="validation--errors">
+              <h3>Validation Errors</h3>
+              <ul>
+                {errors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
       ) : (
         <h1>Loading</h1>
