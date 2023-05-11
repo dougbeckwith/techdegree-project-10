@@ -36,7 +36,7 @@ const UpdateCourse = () => {
         setEstimatedTime(course.estimatedTime);
         setMaterialsNeeded(course.materialsNeeded);
       } else if (response.status === 400) {
-        navigate("notfound");
+        navigate("/notfound");
       } else if (response.status === 401) {
         navigate("/forbidden");
       } else if (response.status === 500) {
